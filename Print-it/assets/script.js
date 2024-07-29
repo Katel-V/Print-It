@@ -19,48 +19,55 @@ const slides = [
 console.log(slides);
 
 // les variables 
-const dots = document.querySelector(".dots"); 
+const dotContainer = document.querySelector(".dots"); 
 const arrowRight = document.querySelector(".arrow_right");
 const arrowLeft = document.querySelector(".arrow_left");
 const bannerImg = document.querySelector(".banner-img");
-const bannerText = document.querySelector("#banner > p");
-let index = 0;
-
-// affichage des dots 
-function createDots() {
-	for (let i = 0; i < slides.length; i++) {  //tant que index et inf à la longueur du tableau on ajoute i++
-		const dot = document.createElement("div");  //création d'un dot pour chaque élément du tableau
-		dot.classList.add("dot");
-		dots.appendChild(dot);
-		if (i == index) {  // pour qu'un dot soit marqué
-			dot.classList.add("dot_selected");
-		}  
-	}
-}
-createDots();
+let currentIndex = 0;
+const dots = document.querySelectorAll(".dot");
 
 
-// changement d'image et de texte au click droit
-function clickRight() {
-	arrowRight.addEventListener ("click", () => {
-		index++;
-		console.log(index);
-		bannerImg.src =  slides[index].image ('./assets/images/slideshow');
-		bannerText.innerHTML = slides[index].tagLine;
+// mettre à jour les dots
+function updateDots (index) {
+	dots.forEach ((dot, i) => {
+		if (i === index) {
+			dot.classList.add('dot_selected'); //ajout de la class au point actuel
+		} else {
+			dot.classList.remove('dot_selected'); //supprime la class aux autres points
+		}
 	});
 }
-clickRight ();
 
+// mettre à jour les dots, l'image et le texte
+function updateCarrousel (index, direction) {
+	if (currentIndex === -1 && direction === 'left') {
+		currentIndex = slides.length -1;
+	} else if (currentIndex === slides.length && direction ==='right') {
+		currentIndex = 0;
+	}
 
-// changement d'image et de text au click gauche
-function clickLeft() {
-	arrowLeft.addEventListener ("click", () => {
-		index--;
-		bannerImg.src = './assets/images/slideshow/$ {slides[index -1].image}';
-		bannerText.innerHTML = slides[index - 1].tagLine;
-	});	
+	// mettre à jour l'image
+	const imagePath = 'assets/images/slideshow/${slides[currentIndex].image}';
+	bannerImg.scr = imagePath;
+	bannerImg.alt = 'Slide ${currentIndex + 1}';
+
+	// mettre à jours le texte
+	const tagLine = slides[currentIndex].tagLine;
+	document.querySelector('p').innerHTML = tagLine;
+
+	console.log('clic surla flèche ${direction}');
 }
-clickLeft ();
-	
 
+// action sur le clic de la flèche de droite
+arrowRight.addEventListener ('click', function () {
+	currentIndex = (currentIndex + 1);
+	updateCarrousel (currentIndex, 'right');
+	updateDots (currentIndex); 
+});
 
+// action sur le clic de la flèche de gauche
+arrowLeft.addEventListener ('click', function () {
+	currentIndex = (currentIndex - 1);
+	updateCarrousel (currentIndex, 'left');
+	updateDots (currentIndex); 
+});
